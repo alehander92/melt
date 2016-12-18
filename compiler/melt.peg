@@ -1,0 +1,169 @@
+package compiler
+
+type MeltParser Peg {
+	
+}
+
+Module <- Package Newline Import? Newline? (Top Newline)* EOT
+
+Top <- Function / Interface / Record
+
+Package <- "package" Whitespace LowerLabel
+
+Import <- "import" ':' Newline Indent GoImport? MeltImport?
+
+GoImport <- "go" ':' Newline Indent (String Newline)+ Dedent
+
+MeltImport <- "melt" ':' Newline Indent (String Newline)+ Dedent
+
+Function <- "func" Whitespace FunLabel GenericArgs? FunArgs? Whitespace? Type? ':' Newline Indent Code
+
+Interface <- "interface" Whitespace CapitalLabel GenericArgs? Array?
+
+Array <- ":" Newline Indent (Declaration Newline)+ Dedent
+
+Declaration <- FunLabel '(' (Type ',' Whitespace?)* Type? ')' Z?
+
+Z <- Whitespace Type
+
+Record <- "record" Whitespace CapitalLabel GenericArgs? RecordContents?
+
+RecordContents <- ":" Newline Indent (Sex Newline)+ Dedent
+
+Sex <- Label Whitespace Type
+
+FunArgs <- '(' FunArg* ')'
+
+GenericArgs <- '<' (CapitalLabel ',' Whitespace?)* CapitalLabel '>'
+
+FunArg <- PreArg / LastArg
+
+PreArg <- FunLowerLabel Whitespace Type ',' Whitespace?
+
+LastArg <- FunLowerLabel Whitespace Type
+
+FunLabel <- [A-Za-z][A-Za-z0-9`_]*[?!]? 
+
+Type <- PointerType / FunType / GenericType / CapitalLabel / BuiltinType
+
+PointerType <- '*' Type
+
+FunType <- (TypeExceptFun ',' Whitespace?)* TypeExceptFun Whitespace '->' Whitespace TypeExceptFun
+
+GenericType <- CapitalLabel '<' (CapitalLabel ',' Whitespace?)* CapitalLabel '>'
+
+BuiltinType <- BuiltinSimple / BuiltinSlice / BuiltinArray / BuiltinMap
+
+BuiltinSimple <- "int" / "real" / "string"  
+
+BuiltinSlice <- "[]" Type
+
+BuiltinArray <- "[" Integer "]" Type
+
+BuiltinMap <- "map[" Type "]" Type 
+
+TypeExceptFun <- GenericType / BuiltinType / CapitalLabel
+
+Code <- (Line Newline)+ Dedent
+
+Indent <- "@@indent@@"
+
+Dedent <- "@@dedent@@"
+
+Line <- IndexAssignment / Assignment / BinaryOperation / UnaryOperation / Call / For / On / Return
+
+IndexAssignment <- Expression '[' Expression ']' Whitespace '=' Whitespace Expression
+
+Assignment <- LowerLabel Whitespace '=' Whitespace Expression
+
+Expression <- BinaryOperation / UnaryOperation / Call / Simple
+
+Simple <- List / Label / Number / Constant / String / Error
+
+List <- '[' (Expression ',' Whitespace?)* Expression? ']'
+ 
+BinaryOperation <- ExpressionExceptBinaryOperation Whitespace BinaryOperator Whitespace ExpressionExceptBinaryOperation
+
+ExpressionExceptBinaryOperation <- Simple / UnaryOperation / Call
+
+BinaryOperator <- '+' / '-' / '*' / '/'
+
+UnaryOperation <- UnaryOperator ExpressionExceptOperation
+
+UnaryOperator <- '+' / '-'
+
+ExpressionExceptOperation <- Simple / Call
+
+MethodCall <- Simple '.' Label '(' (Expression ',' Whitespace?)* Expression? ')'
+
+Call <- BuiltinCall / FunCall / MethodCall
+
+BuiltinCall <- BuiltinFun '(' (BuiltinArg ',' Whitespace?)* BuiltinArg? ')'
+
+BuiltinFun <- "make"
+
+BuiltinArg <- Type / Expression
+
+FunCall <- FunLabel '(' (Expression ',' Whitespace?)* Expression? ')'
+
+# ExpressionExceptMethodCall <- Call / Simple
+
+# ExpressionExceptCall <- Simple
+
+For <- ForIn / ForLoop
+
+ForIn <- "for" Whitespace (LowerLabel ',' Whitespace?)* LowerLabel Whitespace 'in' Whitespace Expression ':' Newline Indent Code
+
+ForLoop <- "for" Whitespace LowerLabel Whitespace 'in' Whitespace Range ':' Newline Indent Code
+
+Range <- Integer RangeOperator Integer
+
+RangeOperator <- "..." / ".."
+
+On <- "on" Whitespace FunLabel ':' Newline Indent Code
+
+Return <- ReturnValue / ReturnError / Escalator
+
+ReturnValue <- "return" Whitespace? Expression
+
+ReturnError <- "!!" Whitespace? Expression
+
+Escalator <- "escalate" Whitespace (FunLabel ',' Whitespace?)* FunLabel
+
+LowerLabel <- [a-z][a-z0-9_]*
+
+CapitalLabel <- [A-Z][A-Za-z0-9_]*
+
+FunLowerLabel <- [a-z][a-z0-9`_]*[?!]?
+
+Label <- FunLabel / CapitalLabel / LowerLabel
+
+Float <- [0-9]+ '.' [0-9]+
+
+Integer <- [0-9]+
+
+Number <- Float / Integer
+
+Constant <- "nil" / "true" / "false"
+
+String <- Template / Text
+
+Template <- '"' (Segment Slot)+ Q '"' 
+
+Segment <- [^#]*
+
+Q <- [^\"]*
+
+Text <- '"' [^\"]* '"' 
+
+Error <- "$" Label
+
+Slot <-  "#{" Expression "}" 
+
+Whitespace <- [ ]+
+
+Newline <- [\n]+
+
+# Space <- [ \\t\\n]+
+
+EOT <- !.

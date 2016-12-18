@@ -1,0 +1,20 @@
+import:
+	go:
+    	strings
+    	ioutil
+    	os
+    	melt
+  	melt:
+    	parser
+
+func main():
+	if length(os.Args) < 2:
+		problem("Please: filename")
+	source = ioutil.ReadFile(os.Args[1]) ! problem("File: #{$err}")
+	ast = parser.Parse(to_string(source)) ! problem("Parser: #{$err}")
+	env = new melt.TypeEnv()
+	ioutil.WriteFile("#{os.Args[1]}.melt", melt.Generate(ast, env)) ! problem("#{$err}")
+
+func problem(message string):
+	print("ERROR:\n  #{message}")
+	os.Exit(1)

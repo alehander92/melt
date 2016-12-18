@@ -1,0 +1,85 @@
+%YAML 1.2
+---
+name: Melt
+scope: source.melt
+file_extensions: [melt]
+
+contexts:
+  main:
+    - scope: constant.numeric.float.melt
+      match: \b(?i:(\d+\.\d+))
+    - scope: constant.numeric.integer.decimal.melt
+      match: \b(?i:(\d+))
+    - scope: plain.melt
+      match: \b(?:([a-zA-Z][a-zA-Z0-9_\?\!]*)\()
+      captures:
+        1: constant.numeric.float.melt  
+    - scope: keyword.control.import.melt
+      match: \b(?:(package|import|go|melt|new|ves))\b
+    - scope: keyword.control.melt
+      match: \b(func|record|interface|macro|in|for|escalate|if|else|save|on|return)\b
+    - scope: keyword.boolean.melt
+      match: \b(true|false)\b
+    - scope: keyword.control.melt
+      match: \b(nil|panic|recover|as|of|save|rerror)\b
+    - scope: keyword.boolean.melt
+      match: ([\<\>\[\]\{\}\~\`])
+    - scope: support.class.melt
+      match: (\$[a-zA-Z]+)\b
+    - scope: support.class.melt
+      match: \b([A-Z][a-zA-Z0-9_]*)\b
+    - scope: comment.melt
+      match: ^\#.+
+    - scope: string.melt
+      match: '"'
+      push:  string
+    - scope: plain.melt
+      match: \b(?:\.([a-zA-Z][a-zA-Z0-9_]*)\b[^\(])
+      captures:
+        1: keyword.boolean.melt
+    - scope: keyword.boolean.melt
+      match: ':'
+  string:
+    - meta_scope: string.quoted.double.melt
+    - scope: constant.character.escape.melt
+      match: '#{'
+      push: interpolation
+    - match: '"'
+      pop: true
+
+  interpolation:
+    - meta_scope: plain.melt
+    - scope: constant.numeric.float.melt
+      match: \b(?i:(\d+\.\d+))
+    - scope: constant.numeric.integer.decimal.melt
+      match: \b(?i:(\d+))
+    - scope: plain.melt
+      match: \b(?:([a-zA-Z][a-zA-Z0-9_\?\!]*)\()
+      captures:
+        1: constant.numeric.float.melt  
+    - scope: keyword.control.import.melt
+      match: \b(?:(package|import|go|melt|new|ves))\b
+    - scope: keyword.control.melt
+      match: \b(func|record|interface|macro|in|for|escalate|on|if|else|return)\b
+    - scope: keyword.boolean.melt
+      match: \b(true|false)\b
+    - scope: keyword.control.melt
+      match: \b(nil|panic|recover|as|of|save|rerror)\b
+    - scope: support.class.melt
+      match: (\$[a-zA-Z]+)\b
+    - scope: support.class.melt
+      match: \b([A-Z][a-zA-Z0-9_]*)\b
+    - scope: string.melt
+      match: '"'
+      push:  string
+    - scope: plain.melt
+      match: \b(?:\.([a-zA-Z][a-zA-Z0-9_]*)\b[^\(])
+      captures:
+        1: keyword.boolean.melt
+    - scope: keyword.boolean.melt
+      match: ':'
+    - scope: constant.character.escape.melt
+      match: '}'
+      pop: true
+    
+

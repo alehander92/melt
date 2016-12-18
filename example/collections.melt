@@ -1,0 +1,176 @@
+interface Sequence<T>:
+	Begin()
+	Next() *T
+	Length() int
+
+interface Comparable<T>:
+	Cmp(T) int
+
+interface Plus<T>:
+	Plus(T) T
+	Zero() T
+
+interface Mult<T>:
+	Mult(T) T
+	Base() T
+
+func Map?<T, U>(handler? T -> U, sequence Sequence<T>) []U:
+	result = make([]U, len(sequence))
+	for i, item in sequence:
+		result[i] = handler?(item)
+
+	escalate handler?
+	return result
+
+
+func Filter?<T>(test? T -> bool, sequence Sequence<T>) []T:
+	result = [] as []T
+	for _, item in sequence:
+		if test?(item):
+			result.Push(item)
+
+	escalate test?
+	return result
+
+func Reduce?<T, U>(initial U, memo? U, T -> U, sequence Sequence<T>) U:
+	result = initial
+	for _, item in sequence:
+		result = memo?(result)
+
+	escalate memo?
+	return result
+
+func All?<T>(test? T -> bool, sequence Sequence<T>) bool:
+	for _, item in sequence:
+		if !test?(item):
+			return false
+
+	escalate test?
+	return true
+
+func Any?<T>(test? T -> bool, sequence Sequence<T>) bool:
+	for _, item in sequence:
+		if test?(item):
+			return true
+
+	escalate test?
+	return false
+
+func None?<T>(test? T -> bool, sequence Sequence<T>) bool:
+	for _, item in sequence:
+		if test?(item):
+			return false
+
+	escalate test?
+	return true
+
+func Sum<T:Plus>(sequence Sequence<T>) T:
+	result = sequence.Zero()
+	for _, item in sequence:
+		result += result
+
+	return result
+
+func Product<T:Mult>(sequence Sequence<T>) T:
+	result = sequence.Base()
+	for _, item in sequence:
+		result *= item
+
+	return result
+
+func ToList<T>(sequence Sequence<T>) []T:
+	result = make([]T, len(sequence))
+	for i, a = sequence:
+		result[i] = a
+
+	return result
+
+func Sort<T:Comparable>(sequence Sequence<T:Comparable>) []T:
+	if len(sequence) < 2:
+		return ToList(sequence)
+	result = make([]T, len(sequence))
+	result[0] = sequence[0]
+	size = 1
+	for i, a in sequence:
+		for r in 0...size:
+			if result[r] < a:
+				result[size] = a
+				size += 1
+				break
+	return result
+
+func Max<T:Comparable>!(sequence Sequence<T:Comparable>) T:
+	if len(sequence) == 0:
+		!! "Length is 0"
+	max = sequence[0]
+	for i, a in sequence:
+		if i > 0:
+			if a > max:
+				max = a
+	
+	return max
+
+func Min<T:Comparable>!(sequence Sequence<T:Comparable>) T:
+	if len(sequence) == 0:
+		!! "Length is 0"
+	min = sequence[0]
+	for i, a in sequence:
+		if i > 0 && a < min:
+			min = a
+
+	return max
+
+func Find<T>!(sequence Sequence<T>, query T) T:
+	for _, a in sequence:
+		if a == query:
+			return a
+
+	!! "Not found"
+
+func FindAll<T>(sequence Sequence<T>, query T) []T:
+	result = [] as []T
+	for _, a in sequence:
+		if a == query:
+			result.Push(a)
+
+	return result
+
+func Index<T>(sequence Sequence<T>, query T) int:
+	for i, a in sequence:
+		if a == query:
+			return i
+
+	return -1
+
+func Each?<T>(sequence Sequence<T>, handler? T ->):
+	for _, item in sequence:
+		handler?(item)
+
+	escalate handler?
+
+func EachWithIndex<T>(sequence Sequence<T>, handler? int, T ->):
+	for i, item in sequence:
+		handler?(i, item)
+
+	escalate handler?
+
+func EachCons<T>(sequence Sequence<T>, length int, handler? []T ->):
+	cons = make([]T, length)
+	for i, item in sequence:
+		if i > length - 2:
+			handler?(cons)
+			cons = cons[1:]
+		cons.Push(item)
+
+	escalate handler?
+
+func EachSlice<T>(sequence Sequence<T>, length int, handler? []T ->):
+	slice = make([]T, length)
+	for i, item in sequence:
+		if i % length == 0 || i == len(sequence) - 1:
+			handler?(slice)
+			slice = slice[:0]
+		slice.Push(item)
+
+	escalate handler?
+
