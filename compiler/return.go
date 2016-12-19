@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	"gitlab.com/alehander42/melt/compiler/types"
+	"gitlab.com/alehander42/melt/types"
 )
 
 // Return node

@@ -3,7 +3,7 @@ package compiler
 import (
 	"errors"
 
-	"gitlab.com/alehander42/melt/compiler/types"
+	"gitlab.com/alehander42/melt/types"
 )
 
 //Operator int

@@ -3,7 +3,8 @@ package compiler
 import (
 	"errors"
 	"fmt"
-	"gitlab.com/alehander42/melt/compiler/types"
+
+	"gitlab.com/alehander42/melt/types"
 )
 
 type List struct {

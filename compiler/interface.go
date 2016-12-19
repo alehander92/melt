@@ -1,6 +1,6 @@
 package compiler
 
-import "gitlab.com/alehander42/melt/compiler/types"
+import "gitlab.com/alehander42/melt/types"
 
 // Interface node
 type Interface struct {

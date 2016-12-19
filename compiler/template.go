@@ -1,6 +1,6 @@
 package compiler
 
-import "gitlab.com/alehander42/melt/compiler/types"
+import "gitlab.com/alehander42/melt/types"
 
 // ToString helper
 // ToString("x") -> &String{Value: "x"}

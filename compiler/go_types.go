@@ -5,7 +5,7 @@ import (
 	"fmt"
 	go_types "go/types"
 
-	"gitlab.com/alehander42/melt/compiler/types"
+	"gitlab.com/alehander42/melt/types"
 )
 
 func TranslateType(goType go_types.Type) (types.Type, error) {

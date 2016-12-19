@@ -5,7 +5,7 @@ import (
 	// "fmt"
 	// "reflect"
 
-	"gitlab.com/alehander42/melt/compiler/types"
+	"gitlab.com/alehander42/melt/types"
 )
 
 type LocationInfo struct {

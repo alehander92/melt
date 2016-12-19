@@ -2,10 +2,12 @@ package main
 
 import (
 	"fmt"
+	"go/format"
 	"io/ioutil"
 	"os"
 
 	"gitlab.com/alehander42/melt/compiler"
+	"gitlab.com/alehander42/melt/generator"
 )
 
 func main() {
@@ -30,12 +32,19 @@ func main() {
 		problem(fmt.Sprintf("%s", err))
 	}
 
-	text, err := compiler.Generate(ast)
+	fileSet, file, err := generator.Generate(ast, &ctx)
 	if err != nil {
 		problem(fmt.Sprintf("%s", err))
 	}
 
-	err = ioutil.WriteFile(fmt.Sprintf("%s.go", os.Args[1]), []byte(text), 0644)
+	e, err := os.Create(fmt.Sprintf("%s.go", os.Args[1]))
+	if err != nil {
+		problem("Can't write")
+	}
+	defer e.Close()
+
+	err = format.Node(e, fileSet, file)
+	// err = ioutil.WriteFile(, []byte(text), 0644)
 	if err != nil {
 		problem(fmt.Sprintf("%s", err))
 	}

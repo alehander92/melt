@@ -1,7 +1,7 @@
 package compiler
 
 import (
-	"gitlab.com/alehander42/melt/compiler/types"
+	"gitlab.com/alehander42/melt/types"
 )
 
 func (env Context) LoadBuiltinTypes() {

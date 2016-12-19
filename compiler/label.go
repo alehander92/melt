@@ -3,7 +3,7 @@ package compiler
 import (
 	"fmt"
 
-	"gitlab.com/alehander42/melt/compiler/types"
+	"gitlab.com/alehander42/melt/types"
 )
 
 // Label node
@@ -35,7 +35,7 @@ func (self *Label) TypeCheck(ctx *Context) error {
 	if (fail == '!' || fail == '?') && !ok {
 		return fmt.Errorf("%s is not a function", label)
 	}
-	if ok && fail != '!' && fail != '?' && n.Error != types.Correct {
+	if ok && fail != '!' && fail != '?' && (n.Error == types.Fail) {
 		return fmt.Errorf("%s needs %s", label, types.Alexander(n.Error))
 	}
 
