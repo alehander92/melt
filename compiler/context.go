@@ -9,9 +9,9 @@ import (
 // Instantiation map
 // Have to be generated
 type Instantiation struct {
-	Functions  map[string][]Function
-	Interfaces map[string][]Interface
-	Records    map[string][]Record
+	Functions  map[string][]map[string]types.Type
+	Interfaces map[string][]map[string]types.Type
+	Records    map[string][]map[string]types.Type
 }
 
 type Context struct {
@@ -19,6 +19,9 @@ type Context struct {
 	Parent         *Context
 	Instantiations *Instantiation
 	Root           *Context
+	IsGeneric      bool
+	Dependencies   map[string]map[string][]map[string]types.Type
+	Label          string
 	Unhandled      *map[string]bool
 	ReturnType     types.Type
 	Z              types.ErrorFunction
@@ -26,11 +29,26 @@ type Context struct {
 
 func NewContext() Context {
 	unhandled := make(map[string]bool)
-	return Context{Values: make(map[string]types.Type), Parent: nil, Root: nil, Instantiations: &Instantiation{}, Z: types.Correct, Unhandled: &unhandled}
+	return Context{
+		Values:         make(map[string]types.Type),
+		Parent:         nil,
+		Root:           nil,
+		Label:          "",
+		Instantiations: &Instantiation{Functions: make(map[string][]map[string]types.Type), Records: make(map[string][]map[string]types.Type), Interfaces: make(map[string][]map[string]types.Type)},
+		Dependencies:   make(map[string]map[string][]map[string]types.Type),
+		Z:              types.Correct,
+		Unhandled:      &unhandled,
+		IsGeneric:      false}
 }
 
 func NewContextIn(parent *Context) *Context {
-	return &Context{Values: make(map[string]types.Type), Parent: parent, Root: parent.Root, Unhandled: parent.Unhandled}
+	return &Context{
+		Values:    make(map[string]types.Type),
+		Parent:    parent,
+		Root:      parent.Root,
+		Label:     parent.Label,
+		Unhandled: parent.Unhandled,
+		IsGeneric: parent.IsGeneric}
 }
 
 func (t *Context) Set(label string, value types.Type) {

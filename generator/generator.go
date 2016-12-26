@@ -13,6 +13,7 @@ import (
 
 // Generate returns go ast which can be then compiled to code
 func Generate(meltAst comp.Module, ctx *comp.Context) (*token.FileSet, *ast.File, error) {
+	b()
 	f := token.NewFileSet()
 	a, err := GenerateModule(meltAst, ctx)
 	if err != nil {
@@ -37,6 +38,10 @@ func MapIntIntSequenceSlice(handler (func(int) int), sequence []int) []int {
 
 func Double(number int) int {
 	return number * 2
+}
+
+type A struct {
+	x int
 }
 
 

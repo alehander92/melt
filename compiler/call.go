@@ -34,7 +34,7 @@ func (m *MethodCall) TypeCheck(ctx *Context) error {
 			return errors.New("method doesn't respond")
 		}
 
-		actual, err := CallCheck(m.Method.Label, kind.Function, m.Args, &objectType, ctx)
+		actual, _, err := CallCheck(m.Method.Label, kind.Function, m.Args, &objectType, ctx)
 		if err != nil {
 			return err
 		}
@@ -68,28 +68,48 @@ func (c *Call) TypeCheck(ctx *Context) error {
 	}
 
 	if function, ok := c.Function.MeltType().(types.Function); ok {
-		actual, err := CallCheck(c.Function.Label, function, c.Args, nil, ctx)
+		actual, genericMap, err := CallCheck(c.Function.Label, function, c.Args, nil, ctx)
 		if err != nil {
 			return err
 		}
 		(*ctx.Unhandled)[c.Function.Label] = true
 		c.meltType = actual
+
+		if len(c.Function.InstanceVars) > 0 && genericMap != nil {
+			if !ctx.IsGeneric {
+				functions, ok := ctx.Root.Instantiations.Functions[c.Function.Label]
+				if !ok {
+					functions = []map[string]types.Type{}
+				}
+				ctx.Root.Instantiations.Functions[c.Function.Label] = append(functions,
+					genericMap)
+			} else {
+				d, ok := ctx.Root.Dependencies[ctx.Label][c.Function.Label]
+				if !ok {
+					d = []map[string]types.Type{}
+				}
+				c.Functions.Dependencies[ctx.Label][c.Function.Label] = d
+			}
+		}
+
 	} else {
 		return errors.New("not a function type")
 	}
+
 	return nil
 }
 
-func CallCheck(label string, function types.Function, args []Ast, receiver *types.Duck, ctx *Context) (types.Type, error) {
+func CallCheck(label string, function types.Function, args []Ast, receiver *types.Duck, ctx *Context) (types.Type, map[string]types.Type, error) {
 	if label == "len" && receiver == nil {
 		return LenCheck(function, args, ctx)
 	} else if label == "print" && receiver == nil {
 		p := function.Return
-		return p, nil
+		return p, nil, nil
 	}
 
 	if len(function.Args) != len(args) {
 		return types.Empty{},
+			nil,
 			fmt.Errorf("Expected different args %s:\n    received %d\n    wanted %d", label, len(args), len(function.Args))
 	}
 
@@ -102,7 +122,7 @@ func CallCheck(label string, function types.Function, args []Ast, receiver *type
 
 	if function.Error == types.Correct && error != types.Correct ||
 		function.Error == types.Fail && error == types.Correct {
-		return types.Empty{}, fmt.Errorf("Error %s: received %s, wanted %s", label, types.Alexander(error), types.Alexander(function.Error))
+		return types.Empty{}, nil, fmt.Errorf("Error %s: received %s, wanted %s", label, types.Alexander(error), types.Alexander(function.Error))
 	}
 
 	if len(function.GenericVars) > 0 {
@@ -114,19 +134,20 @@ func CallCheck(label string, function types.Function, args []Ast, receiver *type
 			fArg := function.Args[i]
 			err := Match(&genericMap, arg.MeltType(), fArg, ctx)
 			if err != nil {
-				return types.Empty{}, err
+				return types.Empty{}, nil, err
 			}
 		}
 
 		for id := range genericMap {
 			_, ok := genericMap[id].(types.Empty)
 			if ok {
-				return types.Empty{}, fmt.Errorf("Error %s: %s not actualized", label, id)
+				return types.Empty{}, nil, fmt.Errorf("Error %s: %s not actualized", label, id)
 			}
 		}
 
 		returnType := types.ReplaceGenericVars(function.Return, genericMap)
-		return returnType, nil
+
+		return returnType, genericMap, nil
 	} else {
 		for i, arg := range args {
 			fArg := function.Args[i]
@@ -134,18 +155,18 @@ func CallCheck(label string, function types.Function, args []Ast, receiver *type
 				return types.Empty{}, fmt.Errorf("Bad call:\n    received %s\n    wanted %s", arg.MeltType().ToString(), fArg.ToString())
 			}
 		}
-		return function.Return, nil
+		return function.Return, nil, nil
 	}
 }
 
-func LenCheck(function types.Function, args []Ast, ctx *Context) (types.Type, error) {
+func LenCheck(function types.Function, args []Ast, ctx *Context) (types.Type, map[string]types.Type, error) {
 	if len(args) != 1 {
-		return types.Empty{}, errors.New("Len takes one arg")
+		return types.Empty{}, nil, errors.New("Len takes one arg")
 	} else {
 		switch a := args[0].MeltType().(type) {
 		case types.SliceBuiltin:
 			i := function.Return
-			return i, nil
+			return i, nil, nil
 		case types.Duck:
 			length, ok := types.Accepts(a, "Length")
 			j, k := a.(types.Interface)
@@ -154,13 +175,13 @@ func LenCheck(function types.Function, args []Ast, ctx *Context) (types.Type, er
 				if len(length.Function.Args) == 0 && length.Function.Error == types.Correct {
 					m, ok := length.Function.Return.(types.Basic)
 					if ok && m.Label == "int" {
-						return m, nil
+						return m, nil, nil
 					}
 				}
 			}
-			return types.Empty{}, errors.New("Length() int")
+			return types.Empty{}, nil, errors.New("Length() int")
 		default:
-			return types.Empty{}, errors.New("Slice or Length")
+			return types.Empty{}, nil, errors.New("Slice or Length")
 		}
 	}
 }

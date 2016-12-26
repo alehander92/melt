@@ -47,6 +47,8 @@ func (f *Function) TypeCheck(ctx *Context) error {
 	ftype, _ := f.meltType.(types.Function)
 	c.ReturnType = ftype.Return
 	c.Z = ftype.Error
+	c.Root.Dependencies[f.Label.Label] = make(map[string][]map[string]types.Type)
+	c.Label = f.Label.Label
 
 	baba := []Arg{}
 	for _, arg := range f.Args {
@@ -91,6 +93,10 @@ func (f *Function) TypeCheck(ctx *Context) error {
 	fArgs := []types.Type{}
 	for _, arg := range f.Args {
 		fArgs = append(fArgs, arg.Type)
+	}
+
+	if len(ftype.InstanceVars) > 0 {
+		c.IsGeneric = true
 	}
 
 	err := f.Code.TypeCheck(c)

@@ -32,6 +32,11 @@ func main() {
 		problem(fmt.Sprintf("%s", err))
 	}
 
+	err = compiler.Instantiate(&ast)
+	if err != nil {
+		problem(fmt.Sprintf("%s", err))
+	}
+
 	fileSet, file, err := generator.Generate(ast, &ctx)
 	if err != nil {
 		problem(fmt.Sprintf("%s", err))
