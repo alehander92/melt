@@ -32,7 +32,7 @@ func main() {
 		problem(fmt.Sprintf("%s", err))
 	}
 
-	err = compiler.Instantiate(&ast)
+	err = compiler.Instantiate(&ast, &ctx)
 	if err != nil {
 		problem(fmt.Sprintf("%s", err))
 	}

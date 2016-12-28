@@ -75,8 +75,10 @@ func (c *Call) TypeCheck(ctx *Context) error {
 		(*ctx.Unhandled)[c.Function.Label] = true
 		c.meltType = actual
 
-		if len(c.Function.InstanceVars) > 0 && genericMap != nil {
+		if len(function.InstanceVars) > 0 && genericMap != nil {
 			if !ctx.IsGeneric {
+				fmt.Printf("J %s %d\n", c.Function.Label, len(function.InstanceVars))
+
 				functions, ok := ctx.Root.Instantiations.Functions[c.Function.Label]
 				if !ok {
 					functions = []map[string]types.Type{}
@@ -84,11 +86,13 @@ func (c *Call) TypeCheck(ctx *Context) error {
 				ctx.Root.Instantiations.Functions[c.Function.Label] = append(functions,
 					genericMap)
 			} else {
+				fmt.Printf("K %s %d\n", c.Function.Label, len(function.InstanceVars))
+
 				d, ok := ctx.Root.Dependencies[ctx.Label][c.Function.Label]
 				if !ok {
 					d = []map[string]types.Type{}
 				}
-				c.Functions.Dependencies[ctx.Label][c.Function.Label] = d
+				ctx.Root.Dependencies[ctx.Label][c.Function.Label] = d
 			}
 		}
 
@@ -152,7 +156,7 @@ func CallCheck(label string, function types.Function, args []Ast, receiver *type
 		for i, arg := range args {
 			fArg := function.Args[i]
 			if !fArg.Accepts(arg.MeltType()) {
-				return types.Empty{}, fmt.Errorf("Bad call:\n    received %s\n    wanted %s", arg.MeltType().ToString(), fArg.ToString())
+				return types.Empty{}, nil, fmt.Errorf("Bad call:\n    received %s\n    wanted %s", arg.MeltType().ToString(), fArg.ToString())
 			}
 		}
 		return function.Return, nil, nil

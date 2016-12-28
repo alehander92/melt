@@ -42,10 +42,17 @@ func NewContext() Context {
 }
 
 func NewContextIn(parent *Context) *Context {
+	var root *Context
+	if parent.Root != nil {
+		root = parent.Root
+	} else {
+		root = parent
+	}
+
 	return &Context{
 		Values:    make(map[string]types.Type),
 		Parent:    parent,
-		Root:      parent.Root,
+		Root:      root,
 		Label:     parent.Label,
 		Unhandled: parent.Unhandled,
 		IsGeneric: parent.IsGeneric}
