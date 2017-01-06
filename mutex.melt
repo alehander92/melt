@@ -16,7 +16,7 @@ import:
 func main():
 
     # For our example the `state` will be a map.
-    state = make(Map[Int]Int)
+    state = make(Map[int]int)
 
     # This `mutex` will synchronize access to `state`.
     mutex = &sync.Mutex{}
@@ -24,12 +24,12 @@ func main():
     # To compare the mutex-based approach with another
     # we'll see later, `ops` will count how many
     # operations we perform against the state.
-    ops int64 = 0
+    ops = 0 as int64
 
     # Here we start 100 goroutines to execute repeated
     # reads against the state.
     for r in 0...100:
-        go func()!:
+        go ->func():
             total = 0
             loop:
 

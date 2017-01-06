@@ -81,7 +81,7 @@ func (c *Call) TypeCheck(ctx *Context) error {
 
 				functions, ok := ctx.Root.Instantiations.Functions[c.Function.Label]
 				if !ok {
-					functions = []map[string]types.Type{}
+					functions = []TypeMap{}
 				}
 				ctx.Root.Instantiations.Functions[c.Function.Label] = append(functions,
 					genericMap)
@@ -90,7 +90,7 @@ func (c *Call) TypeCheck(ctx *Context) error {
 
 				d, ok := ctx.Root.Dependencies[ctx.Label][c.Function.Label]
 				if !ok {
-					d = []map[string]types.Type{}
+					d = []TypeMap{}
 				}
 				ctx.Root.Dependencies[ctx.Label][c.Function.Label] = d
 			}

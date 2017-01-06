@@ -48,7 +48,7 @@ func (f *Function) TypeCheck(ctx *Context) error {
 	c.ReturnType = ftype.Return
 	c.Z = ftype.Error
 	fmt.Printf("%s\n", c.Root)
-	c.Root.Dependencies[f.Label.Label] = make(map[string][]map[string]types.Type)
+	c.Root.Dependencies[f.Label.Label] = make(map[string][]TypeMap)
 	c.Label = f.Label.Label
 
 	baba := []Arg{}

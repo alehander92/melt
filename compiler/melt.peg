@@ -1,7 +1,7 @@
 package compiler
 
 type MeltParser Peg {
-	
+
 }
 
 Module <- Package Newline Import? Newline? (Top Newline)* EOT
@@ -42,7 +42,7 @@ PreArg <- FunLowerLabel Whitespace Type ',' Whitespace?
 
 LastArg <- FunLowerLabel Whitespace Type
 
-FunLabel <- [A-Za-z][A-Za-z0-9`_]*[?!]? 
+FunLabel <- [A-Za-z][A-Za-z0-9`_]*[?!]?
 
 Type <- PointerType / FunType / GenericType / CapitalLabel / BuiltinType
 
@@ -54,13 +54,13 @@ GenericType <- CapitalLabel '<' (CapitalLabel ',' Whitespace?)* CapitalLabel '>'
 
 BuiltinType <- BuiltinSimple / BuiltinSlice / BuiltinArray / BuiltinMap
 
-BuiltinSimple <- "int" / "real" / "string"  
+BuiltinSimple <- "int" / "real" / "string"
 
 BuiltinSlice <- "[]" Type
 
 BuiltinArray <- "[" Integer "]" Type
 
-BuiltinMap <- "map[" Type "]" Type 
+BuiltinMap <- "map[" Type "]" Type
 
 TypeExceptFun <- GenericType / BuiltinType / CapitalLabel
 
@@ -81,7 +81,7 @@ Expression <- BinaryOperation / UnaryOperation / Call / Simple
 Simple <- List / Label / Number / Constant / String / Error
 
 List <- '[' (Expression ',' Whitespace?)* Expression? ']'
- 
+
 BinaryOperation <- ExpressionExceptBinaryOperation Whitespace BinaryOperator Whitespace ExpressionExceptBinaryOperation
 
 ExpressionExceptBinaryOperation <- Simple / UnaryOperation / Call
@@ -148,17 +148,17 @@ Constant <- "nil" / "true" / "false"
 
 String <- Template / Text
 
-Template <- '"' (Segment Slot)+ Q '"' 
+Template <- '"' (Segment Slot)+ Q '"'
 
 Segment <- [^#]*
 
 Q <- [^\"]*
 
-Text <- '"' [^\"]* '"' 
+Text <- '"' [^\"]* '"'
 
 Error <- "$" Label
 
-Slot <-  "#{" Expression "}" 
+Slot <-  "#{" Expression "}"
 
 Whitespace <- [ ]+
 

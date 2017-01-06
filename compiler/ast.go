@@ -17,6 +17,7 @@ type Ast interface {
 	Location() LocationInfo
 	ToString(int) string
 	MeltType() types.Type
+	ChangeMeltType(types.Type)
 	TypeCheck(ctx *Context) error
 }
 
@@ -27,6 +28,10 @@ type Info struct {
 
 func (self Info) MeltType() types.Type {
 	return self.meltType
+}
+
+func (self Info) ChangeMeltType(t types.Type) {
+	self.meltType = t
 }
 
 func (self Info) ToString(depth int) string {

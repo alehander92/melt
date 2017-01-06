@@ -3,24 +3,27 @@ package compiler
 import (
 	"errors"
 	"fmt"
+
 	"gitlab.com/alehander42/melt/types"
 )
+
+type TypeMap map[string]types.Type
 
 // Instantiation map
 // Have to be generated
 type Instantiation struct {
-	Functions  map[string][]map[string]types.Type
-	Interfaces map[string][]map[string]types.Type
-	Records    map[string][]map[string]types.Type
+	Functions  map[string][]TypeMap
+	Interfaces map[string][]TypeMap
+	Records    map[string][]TypeMap
 }
 
 type Context struct {
-	Values         map[string]types.Type
+	Values         TypeMap
 	Parent         *Context
 	Instantiations *Instantiation
 	Root           *Context
 	IsGeneric      bool
-	Dependencies   map[string]map[string][]map[string]types.Type
+	Dependencies   map[string]map[string][]TypeMap
 	Label          string
 	Unhandled      *map[string]bool
 	ReturnType     types.Type
@@ -30,12 +33,12 @@ type Context struct {
 func NewContext() Context {
 	unhandled := make(map[string]bool)
 	return Context{
-		Values:         make(map[string]types.Type),
+		Values:         make(TypeMap),
 		Parent:         nil,
 		Root:           nil,
 		Label:          "",
-		Instantiations: &Instantiation{Functions: make(map[string][]map[string]types.Type), Records: make(map[string][]map[string]types.Type), Interfaces: make(map[string][]map[string]types.Type)},
-		Dependencies:   make(map[string]map[string][]map[string]types.Type),
+		Instantiations: &Instantiation{Functions: make(map[string][]TypeMap), Records: make(map[string][]TypeMap), Interfaces: make(map[string][]TypeMap)},
+		Dependencies:   make(map[string]map[string][]TypeMap),
 		Z:              types.Correct,
 		Unhandled:      &unhandled,
 		IsGeneric:      false}
@@ -50,7 +53,7 @@ func NewContextIn(parent *Context) *Context {
 	}
 
 	return &Context{
-		Values:    make(map[string]types.Type),
+		Values:    make(TypeMap),
 		Parent:    parent,
 		Root:      root,
 		Label:     parent.Label,
