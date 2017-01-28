@@ -15,7 +15,7 @@ type Make struct {
 }
 
 func (m *Make) TypeCheck(ctx *Context) error {
-	fmt.Printf("%T\n", m.Args[0])
+	// fmt.Printf("%T\n", m.Args[0])
 	slice, ok := m.Type.(types.SliceBuiltin)
 	if ok {
 		if len(m.Args) < 1 {

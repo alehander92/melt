@@ -30,6 +30,10 @@ func GenerateType(t types.Type, ctx *comp.Context) (ast.Expr, error) {
 
 		return &ast.StarExpr{X: object}, nil
 
+	case types.Interface:
+		l := &ast.Ident{Name: other.Label}
+		return l, nil
+
 	case types.Function:
 		if other.Error == types.Maybe {
 			return nil, fmt.Errorf("%s can't be ?", other.ToString())

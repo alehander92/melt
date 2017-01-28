@@ -75,13 +75,13 @@ func (c *Call) TypeCheck(ctx *Context) error {
 		(*ctx.Unhandled)[c.Function.Label] = true
 		c.meltType = actual
 
-		if len(function.InstanceVars) > 0 && genericMap != nil {
+		if len(function.InstanceVars) > 0 {
 			if !ctx.IsGeneric {
 				fmt.Printf("J %s %d\n", c.Function.Label, len(function.InstanceVars))
 
 				functions, ok := ctx.Root.Instantiations.Functions[c.Function.Label]
 				if !ok {
-					functions = []TypeMap{}
+					functions = []GenericMap{}
 				}
 				ctx.Root.Instantiations.Functions[c.Function.Label] = append(functions,
 					genericMap)
@@ -90,7 +90,7 @@ func (c *Call) TypeCheck(ctx *Context) error {
 
 				d, ok := ctx.Root.Dependencies[ctx.Label][c.Function.Label]
 				if !ok {
-					d = []TypeMap{}
+					d = []GenericMap{}
 				}
 				ctx.Root.Dependencies[ctx.Label][c.Function.Label] = d
 			}
@@ -103,17 +103,18 @@ func (c *Call) TypeCheck(ctx *Context) error {
 	return nil
 }
 
-func CallCheck(label string, function types.Function, args []Ast, receiver *types.Duck, ctx *Context) (types.Type, map[string]types.Type, error) {
+func CallCheck(label string, function types.Function, args []Ast, receiver *types.Duck, ctx *Context) (types.Type, GenericMap, error) {
+
 	if label == "len" && receiver == nil {
 		return LenCheck(function, args, ctx)
 	} else if label == "print" && receiver == nil {
 		p := function.Return
-		return p, nil, nil
+		return p, GenericMap{}, nil
 	}
 
 	if len(function.Args) != len(args) {
 		return types.Empty{},
-			nil,
+			GenericMap{},
 			fmt.Errorf("Expected different args %s:\n    received %d\n    wanted %d", label, len(args), len(function.Args))
 	}
 
@@ -126,91 +127,91 @@ func CallCheck(label string, function types.Function, args []Ast, receiver *type
 
 	if function.Error == types.Correct && error != types.Correct ||
 		function.Error == types.Fail && error == types.Correct {
-		return types.Empty{}, nil, fmt.Errorf("Error %s: received %s, wanted %s", label, types.Alexander(error), types.Alexander(function.Error))
+		return types.Empty{}, GenericMap{}, fmt.Errorf("Error %s: received %s, wanted %s", label, types.Alexander(error), types.Alexander(function.Error))
 	}
 
 	if len(function.GenericVars) > 0 {
-		genericMap := make(map[string]types.Type)
+		genericMap := NewGenericMap()
 		for _, r := range function.GenericVars {
-			genericMap[r.Label] = types.Empty{}
+			genericMap.Types[r.Label] = types.Empty{}
 		}
 		for i, arg := range args {
 			fArg := function.Args[i]
 			err := Match(&genericMap, arg.MeltType(), fArg, ctx)
 			if err != nil {
-				return types.Empty{}, nil, err
+				return types.Empty{}, GenericMap{}, err
 			}
 		}
 
-		for id := range genericMap {
-			_, ok := genericMap[id].(types.Empty)
+		for id := range genericMap.Types {
+			_, ok := genericMap.Types[id].(types.Empty)
 			if ok {
-				return types.Empty{}, nil, fmt.Errorf("Error %s: %s not actualized", label, id)
+				return types.Empty{}, GenericMap{}, fmt.Errorf("Error %s: %s not actualized", label, id)
 			}
 		}
 
-		returnType := types.ReplaceGenericVars(function.Return, genericMap)
+		returnType := ReplaceGenericVars(function.Return, genericMap)
 
 		return returnType, genericMap, nil
 	} else {
 		for i, arg := range args {
 			fArg := function.Args[i]
 			if !fArg.Accepts(arg.MeltType()) {
-				return types.Empty{}, nil, fmt.Errorf("Bad call:\n    received %s\n    wanted %s", arg.MeltType().ToString(), fArg.ToString())
+				return types.Empty{}, GenericMap{}, fmt.Errorf("Bad call:\n    received %s\n    wanted %s", arg.MeltType().ToString(), fArg.ToString())
 			}
 		}
-		return function.Return, nil, nil
+		return function.Return, GenericMap{}, nil
 	}
 }
 
-func LenCheck(function types.Function, args []Ast, ctx *Context) (types.Type, map[string]types.Type, error) {
+func LenCheck(function types.Function, args []Ast, ctx *Context) (types.Type, GenericMap, error) {
 	if len(args) != 1 {
-		return types.Empty{}, nil, errors.New("Len takes one arg")
+		return types.Empty{}, GenericMap{}, errors.New("Len takes one arg")
 	} else {
 		switch a := args[0].MeltType().(type) {
 		case types.SliceBuiltin:
 			i := function.Return
-			return i, nil, nil
+			return i, GenericMap{}, nil
 		case types.Duck:
 			length, ok := types.Accepts(a, "Length")
 			j, k := a.(types.Interface)
-			fmt.Printf("%s %s\n", j.Methods(), k)
+			fmt.Printf("  %s %s\n", j.Methods(), k)
 			if ok {
 				if len(length.Function.Args) == 0 && length.Function.Error == types.Correct {
 					m, ok := length.Function.Return.(types.Basic)
 					if ok && m.Label == "int" {
-						return m, nil, nil
+						return m, GenericMap{}, nil
 					}
 				}
 			}
-			return types.Empty{}, nil, errors.New("Length() int")
+			return types.Empty{}, GenericMap{}, errors.New("Length() int")
 		default:
-			return types.Empty{}, nil, errors.New("Slice or Length")
+			return types.Empty{}, GenericMap{}, errors.New("Slice or Length")
 		}
 	}
 }
 
-func Match(genericMap *map[string]types.Type, callArg types.Type, arg types.Type, ctx *Context) error {
-	fmt.Printf("%s\n", arg.ToString())
+func Match(genericMap *GenericMap, callArg types.Type, arg types.Type, ctx *Context) error {
+	// fmt.Printf("%s\n", arg.ToString())
 	c, ok := callArg.(types.SliceBuiltin)
 	if ok {
 		s, _ := ctx.Get("Slice")
 		s2, _ := s.(types.SliceBuiltin)
 		c.Extend(s2.Methods())
-		m := make(map[string]types.Type)
-		m["T"] = c.Element
-		callArg = types.ReplaceGenericVars(c, m)
+		m := NewGenericMap()
+		m.Types["T"] = c.Element
+		callArg = ReplaceGenericVars(c, m)
 		t, _ := callArg.(types.SliceBuiltin)
-		fmt.Printf("%s\n", t.Methods()[0].Function.ToString())
+		fmt.Printf("  %s\n", t.Methods()[0].Function.ToString())
 	}
 
 	switch other := arg.(type) {
 	case types.Basic:
-		o, ok := (*genericMap)[other.Label]
+		o, ok := (*genericMap).Types[other.Label]
 		if ok {
 			_, ok := o.(types.Empty)
 			if ok {
-				(*genericMap)[other.Label] = callArg
+				(*genericMap).Types[other.Label] = callArg
 				return nil
 			} else {
 				if !o.Accepts(callArg) {
@@ -226,11 +227,11 @@ func Match(genericMap *map[string]types.Type, callArg types.Type, arg types.Type
 		}
 
 	case types.GenericVar:
-		o, ok := (*genericMap)[other.Label]
+		o, ok := (*genericMap).Types[other.Label]
 		if ok {
 			_, ok := o.(types.Empty)
 			if ok {
-				(*genericMap)[other.Label] = callArg
+				(*genericMap).Types[other.Label] = callArg
 				return nil
 			} else {
 				if !o.Accepts(callArg) {
@@ -267,6 +268,14 @@ func Match(genericMap *map[string]types.Type, callArg types.Type, arg types.Type
 			other.Error == types.Fail && o.Error != types.Fail {
 			return fmt.Errorf("%s fix fail", callArg.ToString())
 		}
+		if other.Error == types.Maybe {
+			if o.Error != types.Maybe {
+				genericMap.Errors = append(genericMap.Errors, o.Error)
+			} else {
+				fmt.Printf("ERRORS %s", callArg.ToString())
+				genericMap.Errors = append(genericMap.Errors, types.Maybe)
+			}
+		}
 		if len(other.Args) != len(o.Args) {
 			return fmt.Errorf("%s fix arity", callArg.ToString())
 		}
@@ -293,7 +302,6 @@ func Match(genericMap *map[string]types.Type, callArg types.Type, arg types.Type
 			fmt.Printf("  #%s\n", m.Label)
 
 			value, ok := types.Accepts(duck, m.Label)
-			fmt.Printf("%s\n", duck.Methods())
 			if !ok {
 				return errors.New("not valid")
 			}
@@ -325,7 +333,7 @@ func Match(genericMap *map[string]types.Type, callArg types.Type, arg types.Type
 		return Match(genericMap, t.Object, other.Object, ctx)
 	default:
 		if !arg.Accepts(callArg) {
-			return fmt.Errorf("received %s, wanted %s", callArg.ToString(), types.ReplaceGenericVars(arg, *genericMap).ToString())
+			return fmt.Errorf("received %s, wanted %s", callArg.ToString(), ReplaceGenericVars(arg, *genericMap).ToString())
 		} else {
 			return nil
 		}

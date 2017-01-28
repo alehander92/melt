@@ -9,12 +9,21 @@ import (
 
 type TypeMap map[string]types.Type
 
+type GenericMap struct {
+	Errors []types.ErrorFunction
+	Types  TypeMap
+}
+
+func NewGenericMap() GenericMap {
+	return GenericMap{Errors: make([]types.ErrorFunction, 0), Types: make(TypeMap)}
+}
+
 // Instantiation map
 // Have to be generated
 type Instantiation struct {
-	Functions  map[string][]TypeMap
-	Interfaces map[string][]TypeMap
-	Records    map[string][]TypeMap
+	Functions  map[string][]GenericMap
+	Interfaces map[string][]GenericMap
+	Records    map[string][]GenericMap
 }
 
 type Context struct {
@@ -23,7 +32,7 @@ type Context struct {
 	Instantiations *Instantiation
 	Root           *Context
 	IsGeneric      bool
-	Dependencies   map[string]map[string][]TypeMap
+	Dependencies   map[string]map[string][]GenericMap
 	Label          string
 	Unhandled      *map[string]bool
 	ReturnType     types.Type
@@ -37,8 +46,8 @@ func NewContext() Context {
 		Parent:         nil,
 		Root:           nil,
 		Label:          "",
-		Instantiations: &Instantiation{Functions: make(map[string][]TypeMap), Records: make(map[string][]TypeMap), Interfaces: make(map[string][]TypeMap)},
-		Dependencies:   make(map[string]map[string][]TypeMap),
+		Instantiations: &Instantiation{Functions: make(map[string][]GenericMap), Records: make(map[string][]GenericMap), Interfaces: make(map[string][]GenericMap)},
+		Dependencies:   make(map[string]map[string][]GenericMap),
 		Z:              types.Correct,
 		Unhandled:      &unhandled,
 		IsGeneric:      false}

@@ -7,7 +7,7 @@ import (
 	comp "gitlab.com/alehander42/melt/compiler"
 )
 
-func GenerateRecord(r comp.Record, ctx *comp.Context) (*ast.GenDecl, []*ast.Object, error) {
+func GenerateRecord(r *comp.Record, ctx *comp.Context) (*ast.GenDecl, []*ast.Object, error) {
 	var fields []*ast.Field
 	for _, field := range r.Fields {
 		t, err := GenerateType(field.MeltType(), ctx)

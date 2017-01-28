@@ -11,13 +11,15 @@ import (
 )
 
 func main() {
-	if len(os.Args) < 2 {
-		problem("Please: filename")
-	}
-	source, err := ioutil.ReadFile(os.Args[1])
+	// if len(os.Args) < 2 {
+	// 	problem("Please: filename")
+	// }
+	// source, err := ioutil.ReadFile(os.Args[1])
+	source, err := ioutil.ReadFile("example/map.melt")
 	if err != nil {
 		problem(fmt.Sprintf("File: %s", err))
 	}
+	filename := "example/map.melt"
 
 	ast, err := compiler.Parse(string(source))
 	if err != nil {
@@ -42,7 +44,7 @@ func main() {
 		problem(fmt.Sprintf("%s", err))
 	}
 
-	e, err := os.Create(fmt.Sprintf("%s.go", os.Args[1]))
+	e, err := os.Create(fmt.Sprintf("%s.go", filename))
 	if err != nil {
 		problem("Can't write")
 	}

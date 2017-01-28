@@ -3,9 +3,10 @@ package compiler
 import (
 	"errors"
 	"fmt"
-	"github.com/davecgh/go-spew/spew"
 	"strconv"
 	"strings"
+
+	"github.com/davecgh/go-spew/spew"
 
 	"gitlab.com/alehander42/melt/types"
 )
@@ -285,9 +286,9 @@ func LoadModule(ast *node32, melt *MeltParser) (*Module, error) {
 	} else {
 		imports = MeltImport{}
 	}
-	functions := []Function{}
-	interfaces := []Interface{}
-	records := []Record{}
+	functions := []*Function{}
+	interfaces := []*Interface{}
+	records := []*Record{}
 	for {
 		if Kind(next) == "Newline" {
 			if melt.Buffer[next.begin:next.end] == "\n\n" {
@@ -309,7 +310,7 @@ func LoadModule(ast *node32, melt *MeltParser) (*Module, error) {
 			if err != nil {
 				return &Module{}, err
 			}
-			functions = append(functions, f)
+			functions = append(functions, &f)
 		} else if Kind(next.up) == "Interface" {
 			result, err := LoadNode(next.up, melt)
 			if err != nil {
@@ -317,7 +318,7 @@ func LoadModule(ast *node32, melt *MeltParser) (*Module, error) {
 			}
 			i, ok := result.(*Interface)
 			if ok {
-				interfaces = append(interfaces, *i)
+				interfaces = append(interfaces, i)
 			} else {
 				return &Module{}, errors.New("wat")
 			}
@@ -328,14 +329,14 @@ func LoadModule(ast *node32, melt *MeltParser) (*Module, error) {
 			}
 			r, ok := result.(*Record)
 			if ok {
-				records = append(records, *r)
+				records = append(records, r)
 			} else {
 				return &Module{}, errors.New("wat")
 			}
 		}
 		next = next.next
 	}
-	return &Module{Package: packageLabel, Imports: imports, Interfaces: interfaces, Records: records, Functions: functions}, nil
+	return &Module{Package: packageLabel, Imports: &imports, Interfaces: interfaces, Records: records, Functions: functions}, nil
 }
 
 func LoadImport(ast *node32, melt *MeltParser) (MeltImport, error) {

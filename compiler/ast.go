@@ -30,7 +30,7 @@ func (self Info) MeltType() types.Type {
 	return self.meltType
 }
 
-func (self Info) ChangeMeltType(t types.Type) {
+func (self *Info) ChangeMeltType(t types.Type) {
 	self.meltType = t
 }
 

@@ -9,7 +9,7 @@ import (
 	"gitlab.com/alehander42/melt/types"
 )
 
-func GenerateFunction(f comp.Function, ctx *comp.Context) (*ast.FuncDecl, []*ast.Object, error) {
+func GenerateFunction(f *comp.Function, ctx *comp.Context) (*ast.FuncDecl, []*ast.Object, error) {
 	block, err := GenerateCode(f.Code, ctx)
 	if err != nil {
 		return nil, []*ast.Object{}, err
@@ -17,8 +17,13 @@ func GenerateFunction(f comp.Function, ctx *comp.Context) (*ast.FuncDecl, []*ast
 
 	fields := []*ast.Field{}
 	results := []*ast.Field{}
-	for _, arg := range f.Args {
-		t, err := GenerateType(arg.Type, ctx)
+	m, ok := f.MeltType().(types.Function)
+	if !ok {
+		return nil, []*ast.Object{}, errors.New("Invalid")
+	}
+	for z, arg := range f.Args {
+		argType := m.Args[z]
+		t, err := GenerateType(argType, ctx)
 		if err != nil {
 			return nil, []*ast.Object{}, err
 		}
@@ -27,11 +32,6 @@ func GenerateFunction(f comp.Function, ctx *comp.Context) (*ast.FuncDecl, []*ast
 			&ast.Field{
 				Names: []*ast.Ident{ToIdent(arg.ID.Label)},
 				Type:  t})
-	}
-
-	m, ok := f.MeltType().(types.Function)
-	if !ok {
-		return nil, []*ast.Object{}, errors.New("Invalid")
 	}
 
 	returnType, err := GenerateType(m.Return, ctx)

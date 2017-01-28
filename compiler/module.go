@@ -9,10 +9,10 @@ import (
 // A single file corresponds to it
 type Module struct {
 	Package    string
-	Imports    MeltImport
-	Functions  []Function
-	Interfaces []Interface
-	Records    []Record
+	Imports    *MeltImport
+	Functions  []*Function
+	Interfaces []*Interface
+	Records    []*Record
 
 	Info
 }
