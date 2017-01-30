@@ -1,8 +1,8 @@
 package compiler
 
+import "fmt"
 import (
 	// "errors"
-	// "fmt"
 	// "reflect"
 
 	"gitlab.com/alehander42/melt/types"
@@ -31,6 +31,7 @@ func (self Info) MeltType() types.Type {
 }
 
 func (self *Info) ChangeMeltType(t types.Type) {
+	fmt.Printf("%T %s \n", self, t.ToString())
 	self.meltType = t
 }
 

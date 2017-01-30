@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/mohae/deepcopy"
+	"github.com/alehander42/deepcopy"
 	"gitlab.com/alehander42/melt/types"
 )
 
@@ -242,7 +242,7 @@ func Pre(a Ast) Ast {
 		return &Module{}
 	}
 	c.ChangeMeltType(a.MeltType())
-	// fmt.Printf("  %s\n  %s\n", a.MeltType().ToString(), c.MeltType().ToString())
+	fmt.Printf("BEFORE  %s\n  %s\n", a.MeltType().ToString(), c.MeltType().ToString())
 
 	return c
 }
