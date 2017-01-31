@@ -9,7 +9,7 @@ func Map?<T, U>(handler? T -> U, sequence Sequence<T>) []U:
 	result = make([]U, len(sequence))
 	for i, item in sequence:
 		result[i] = handler?(item)
-	
+
 	escalate handler
 	return result
 
@@ -22,7 +22,7 @@ func main:
 # Map {}
 # 8
 #Map?()
-# 
+#
 # type handlerIntAst func(int) (Ast, error)
 # func map(handler handlerIntAst, sequence []int) ([]Ast, error) {
 #     var result []int

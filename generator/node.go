@@ -26,6 +26,25 @@ func GenerateNode(ast_ comp.Ast, ctx *comp.Context) (ast.Stmt, error) {
 
 func GenerateExpr(ast_ comp.Ast, ctx *comp.Context) (ast.Expr, error) {
 	fmt.Printf("EXPR %T\n", ast_)
+	switch kind := ast_.(type) {
+	default:
+	  {
+	    fmt.Printf("default %T\n", kind)
+		  return &ast.Ident{Name: "unknown"}, nil
+    }
+	case *comp.Make:
+		{
+		  return GenerateMake(kind, ctx)
+	  }
+	case *comp.Label:
+		{
+			return GenerateLabel(kind, ctx)
+	  }
+	case *comp.Call:
+		{
+			return GenerateCall(kind, ctx)
+	  }
+	}
 	return &ast.Ident{Name: "x"}, nil
 }
 
