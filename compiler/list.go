@@ -29,6 +29,6 @@ func (l *List) TypeCheck(ctx *Context) error {
 			return fmt.Errorf("List expects %s", item.ToString())
 		}
 	}
-	l.meltType = types.SliceBuiltin{Element: item}
+	l.ZType = types.SliceBuiltin{Element: item}
 	return nil
 }

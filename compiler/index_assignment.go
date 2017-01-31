@@ -37,7 +37,7 @@ func (self *IndexAssignment) TypeCheck(ctx *Context) error {
 	if err != nil {
 		return err
 	}
-	self.meltType = (*self.Collection).MeltType()
+	self.ZType = (*self.Collection).MeltType()
 
 	switch object := (*self.Collection).MeltType().(type) {
 	case types.SliceBuiltin:

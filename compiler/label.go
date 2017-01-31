@@ -47,7 +47,7 @@ func (self *Label) TypeCheck(ctx *Context) error {
 		return fmt.Errorf("%s shouldn't be ?, but %s", label, types.Alexander(n.Error))
 	}
 
-	self.meltType = m
+	self.ZType = m
 	return nil
 }
 

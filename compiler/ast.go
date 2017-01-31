@@ -13,6 +13,10 @@ type LocationInfo struct {
 	Column int
 }
 
+type MType struct {
+	ZType types.Type
+}
+
 type Ast interface {
 	Location() LocationInfo
 	ToString(int) string
@@ -23,16 +27,16 @@ type Ast interface {
 
 type Info struct {
 	LocationInfo
-	meltType types.Type
+	MType
 }
 
 func (self Info) MeltType() types.Type {
-	return self.meltType
+	return self.ZType
 }
 
 func (self *Info) ChangeMeltType(t types.Type) {
 	fmt.Printf("%T %s \n", self, t.ToString())
-	self.meltType = t
+	self.ZType = t
 }
 
 func (self Info) ToString(depth int) string {

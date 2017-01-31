@@ -44,7 +44,7 @@ func (f *Function) TypeCheck(ctx *Context) error {
 	c := NewContextIn(ctx)
 	unhandled := make(map[string]bool)
 	c.Unhandled = &unhandled
-	ftype, _ := f.meltType.(types.Function)
+	ftype, _ := f.ZType.(types.Function)
 	c.ReturnType = ftype.Return
 	c.Z = ftype.Error
 	c.Root.Dependencies[f.Label.Label] = make(map[string][]GenericMap)
@@ -105,8 +105,8 @@ func (f *Function) TypeCheck(ctx *Context) error {
 	}
 
 	ftype.Args = fArgs
-	f.meltType = ftype
-	ctx.Set(f.Label.Label, f.meltType)
+	f.ZType = ftype
+	ctx.Set(f.Label.Label, f.ZType)
 	return nil
 }
 

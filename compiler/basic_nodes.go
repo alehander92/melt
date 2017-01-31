@@ -33,7 +33,7 @@ func (self *Bool) TypeCheck(ctx *Context) error {
 		m = types.Basic{Label: "bool"}
 		ctx.Root.Set("bool", m)
 	}
-	self.meltType = m
+	self.ZType = m
 	return nil
 }
 
@@ -43,7 +43,7 @@ func (self *Integer) TypeCheck(ctx *Context) error {
 		m := types.Basic{Label: "int"}
 		ctx.Root.Set("int", m)
 	}
-	self.meltType = m
+	self.ZType = m
 	return nil
 }
 
@@ -53,7 +53,7 @@ func (self *Float) TypeCheck(ctx *Context) error {
 		m := types.Basic{Label: "float"}
 		ctx.Root.Set("float", m)
 	}
-	self.meltType = m
+	self.ZType = m
 	return nil
 }
 

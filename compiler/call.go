@@ -39,7 +39,7 @@ func (m *MethodCall) TypeCheck(ctx *Context) error {
 			return err
 		}
 
-		m.meltType = actual
+		m.ZType = actual
 	} else {
 		return errors.New("doesn't have method")
 	}
@@ -73,7 +73,7 @@ func (c *Call) TypeCheck(ctx *Context) error {
 			return err
 		}
 		(*ctx.Unhandled)[c.Function.Label] = true
-		c.meltType = actual
+		c.ZType = actual
 
 		if len(function.InstanceVars) > 0 {
 			if !ctx.IsGeneric {

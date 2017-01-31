@@ -23,7 +23,7 @@ func (self *Cmp) TypeCheck(ctx *Context) error {
 
 	if self.Left.MeltType().Accepts(self.Right.MeltType()) {
 		m, _ := ctx.Get("bool")
-		self.meltType = m
+		self.ZType = m
 		return nil
 	} else {
 		return errors.New("Left doesn't match right")

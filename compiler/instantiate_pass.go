@@ -129,7 +129,7 @@ func ExpandInstance(function Function, index int, genericMap GenericMap) (Functi
 		}
 		f.Error = e
 	}
-	fun.meltType = f
+	fun.ZType = f
 	// fmt.Printf("type %s\n", fun.MeltType().ToString())
 	return fun, nil
 }

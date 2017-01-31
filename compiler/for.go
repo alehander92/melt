@@ -133,7 +133,7 @@ func (self *ForLoop) TypeCheck(ctx *Context) error {
 
 		forCtx := NewContextIn(ctx)
 		forCtx.Set(self.Index.Label, begin)
-		self.Index.meltType = begin
+		self.Index.ZType = begin
 		err = self.Code.TypeCheck(forCtx)
 		if err != nil {
 			return err

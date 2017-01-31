@@ -9,6 +9,6 @@ type Nil struct {
 }
 
 func (n *Nil) TypeCheck(ctx *Context) error {
-	n.meltType = types.Empty{}
+	n.ZType = types.Empty{}
 	return nil
 }

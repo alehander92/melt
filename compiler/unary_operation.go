@@ -32,7 +32,7 @@ func (self *UnaryOperation) TypeCheck(ctx *Context) error {
 
 	if m, ok := (*self.Expression).MeltType().(types.Basic); ok {
 		if m.Label == "float" || m.Label == "int" {
-			self.meltType = m
+			self.ZType = m
 			return nil
 		}
 	}

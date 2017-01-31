@@ -22,13 +22,13 @@ func (s *Set) TypeCheck(ctx *Context) error {
 	target, err := ctx.Get(s.Label.Label)
 	if err != nil {
 		ctx.Set(s.Label.Label, (*s.Value).MeltType())
-		s.Label.meltType = (*s.Value).MeltType()
-		s.meltType = types.Empty{}
+		s.Label.ZType = (*s.Value).MeltType()
+		s.ZType = types.Empty{}
 		return nil
 	} else {
 		if target.Accepts((*s.Value).MeltType()) {
-			s.Label.meltType = target
-			s.meltType = types.Empty{}
+			s.Label.ZType = target
+			s.ZType = types.Empty{}
 			return nil
 		} else {
 			return errors.New("fail")

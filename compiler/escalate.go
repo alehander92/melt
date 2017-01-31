@@ -30,7 +30,7 @@ func (self *Escalate) TypeCheck(ctx *Context) error {
 		}
 	}
 
-	self.meltType = types.Nil{}
+	self.ZType = types.Nil{}
 	return nil
 }
 

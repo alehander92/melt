@@ -29,7 +29,7 @@ func (self *String) TypeCheck(ctx *Context) error {
 		m = types.Basic{Label: "string"}
 		ctx.Root.Set("string", m)
 	}
-	self.meltType = m
+	self.ZType = m
 	return nil
 }
 
@@ -39,7 +39,7 @@ func (self *Template) TypeCheck(ctx *Context) error {
 		m = types.Basic{Label: "string"}
 		ctx.Root.Set("string", m)
 	}
-	self.meltType = m
+	self.ZType = m
 	for _, w := range self.Args {
 		err = w.TypeCheck(ctx)
 		if err != nil {

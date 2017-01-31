@@ -221,7 +221,7 @@ func LoadNode(ast *node32, melt *MeltParser) (Ast, error) {
 		}
 		return &Interface{
 			Label:   l,
-			Info:    Info{meltType: types.NewInterface(l.Label, vesela, t)},
+			Info:    Info{MType: MType{ZType: types.NewInterface(l.Label, vesela, t)}},
 			Methods: methods}, nil
 	case "Record":
 		node := ast.up.next
@@ -248,14 +248,14 @@ func LoadNode(ast *node32, melt *MeltParser) (Ast, error) {
 					return &Record{}, err
 				}
 
-				last := Field{Label: fieldLabel, Info: Info{meltType: fieldType}}
+				last := Field{Label: fieldLabel, Info: Info{MType: MType{ZType: fieldType}}}
 				fields = append(fields, last)
 				typeFields[last.Label.Label] = fieldType
 				node = node.next
 			}
 		}
 		recordType := types.Record{GenericVars: t, InstanceVars: make([]types.Type, len(t)), Fields: typeFields, Label: label.Label}
-		return &Record{Info: Info{meltType: recordType}, Fields: fields, Label: label}, nil
+		return &Record{Info: Info{MType: MType{ZType: recordType}}, Fields: fields, Label: label}, nil
 	case "Top":
 		return LoadNode(ast.up, melt)
 	default:
@@ -668,7 +668,12 @@ func LoadFunction(ast *node32, melt *MeltParser) (Function, error) {
 	}
 
 	f := types.Function{Args: funArgs.Args, Return: funArgs.Return, Error: er, GenericVars: t, InstanceVars: make([]types.Type, len(t))}
-	return Function{Label: ToLabel(label), Signature: funArgs, Info: Info{meltType: f}, Args: functionArgs, Code: code}, nil
+	return Function{
+		Label: ToLabel(label),
+		Signature: funArgs,
+		Info: Info{MType: MType{ZType: f}},
+		Args: functionArgs,
+		Code: code}, nil
 
 }
 

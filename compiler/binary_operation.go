@@ -61,15 +61,15 @@ func (self *BinaryOperation) TypeCheck(ctx *Context) error {
 		if left.Label != "string" || self.Op != AddOp {
 			return errors.New("Only string + supported")
 		} else {
-			self.meltType = right
+			self.ZType = right
 		}
 	} else if right.Label == "int" && left.Label == "int" {
-		self.meltType = right
+		self.ZType = right
 	} else if right.Label == "float" && left.Label == "int" ||
 		right.Label == "float" && left.Label == "float" {
-		self.meltType = right
+		self.ZType = right
 	} else if right.Label == "int" && left.Label == "float" {
-		self.meltType = left
+		self.ZType = left
 	} else {
 		return errors.New("Types not supported binary")
 	}

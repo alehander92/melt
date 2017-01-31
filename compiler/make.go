@@ -29,7 +29,7 @@ func (m *Make) TypeCheck(ctx *Context) error {
 
 			argType, ok := arg.MeltType().(types.Basic)
 			if ok && argType.Label == "int" {
-				m.meltType = slice
+				m.ZType = slice
 			} else {
 				return errors.New("please pass an int")
 			}
@@ -37,7 +37,7 @@ func (m *Make) TypeCheck(ctx *Context) error {
 	} else {
 		n, ok := m.Type.(types.MapBuiltin)
 		if ok {
-			m.meltType = n
+			m.ZType = n
 		} else {
 			return fmt.Errorf("make slice map %s", m.Type.ToString())
 		}

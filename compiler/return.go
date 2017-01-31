@@ -23,7 +23,7 @@ func (r *Return) TypeCheck(ctx *Context) error {
 	if !ctx.ReturnType.Accepts((*r.Value).MeltType()) {
 		return fmt.Errorf("Return type %s != %s", ctx.ReturnType.ToString(), (*r.Value).MeltType().ToString())
 	} else {
-		r.meltType = types.Empty{}
+		r.ZType = types.Empty{}
 		return nil
 	}
 }
@@ -51,7 +51,7 @@ func (r *ReturnError) TypeCheck(ctx *Context) error {
 		if s.Label != "string" {
 			return errors.New("!! expects string")
 		} else {
-			r.meltType = types.Empty{}
+			r.ZType = types.Empty{}
 			return nil
 		}
 	} else {
@@ -71,6 +71,6 @@ func (e *Error) TypeCheck(ctx *Context) error {
 		return errors.New("Only $err defined")
 	}
 
-	e.meltType = types.Error{}
+	e.ZType = types.Error{}
 	return nil
 }
