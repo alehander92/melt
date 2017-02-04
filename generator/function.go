@@ -39,7 +39,9 @@ func GenerateFunction(f *comp.Function, ctx *comp.Context) (*ast.FuncDecl, []*as
 		return nil, []*ast.Object{}, err
 	}
 
-	results = append(results, &ast.Field{Type: returnType})
+	if (m.Return.ToString() != "empty") {
+		results = append(results, &ast.Field{Type: returnType})
+	}
 
 	if m.Error == types.Correct {
 		fmt.Println("yes")

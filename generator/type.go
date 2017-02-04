@@ -63,9 +63,10 @@ func GenerateType(t types.Type, ctx *comp.Context) (ast.Expr, error) {
 		return &ast.FuncType{
 			Params:  &ast.FieldList{List: params},
 			Results: &ast.FieldList{List: results}}, nil
-
+	case types.Empty:
+		return &ast.Ident{Name: "void"}, nil
 	default:
-		fmt.Printf("X:%s\n", t)
+		fmt.Printf("X:%s\n", t.ToString())
 		return nil, errors.New("unknown")
 	}
 }

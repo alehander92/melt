@@ -20,6 +20,22 @@ func GenerateNode(ast_ comp.Ast, ctx *comp.Context) (ast.Stmt, error) {
 		{
 			return GenerateSet(kind, ctx)
 		}
+	case *comp.IndexAssignment:
+		{
+			return GenerateIndexAssignment(kind, ctx)
+	  }
+	case *comp.ForIn:
+		{
+			return GenerateForIn(kind, ctx)
+	  }
+	case *comp.Escalate:
+		{
+			return GenerateEscalate(kind, ctx)
+	  }
+	case *comp.Return:
+		{
+			return GenerateReturn(kind, ctx)
+	  }
 	}
 	return nil, nil
 }
