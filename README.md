@@ -2,19 +2,21 @@
 
 [ ABANDONDED: proof of concept]
 
-That's an old project of mine, here is the original doc.
+That's an old project of mine, here is the original doc:
+
 
 melt compiles to Go.
 
 I like the concurrency and ecosystem of Go and I like to use it for  writing tools and web services.
 However I don't like a lot of the language design choices.
+
 melt fixes:
 
 * Type system: Adds generics and sum types to the type system while remaining compatible to the Go ecosystem
 * Error handling: Keeps Go error model but improves a lot the syntax for it
 * Expresiveness: Easier with the error syntax
 
-# Records
+### Records
 
 ```go
 struct Message:
@@ -56,7 +58,7 @@ type StackOfVectorOfString struct {
 }
 ```
 
-# Syntax:
+### Syntax:
 
 Melt syntax is close to, but not the same as Go:
 
@@ -64,7 +66,7 @@ It's currently indentation-based, but that can change. We can easily
 use Go-style braces, but actually for now I prefer this difference, so
 you can easily say if you're editing melt or go code.
 
-# Optimized error syntax:
+### Optimized error syntax:
 
 Error syntax in Go has those goals:
 
