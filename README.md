@@ -1,17 +1,18 @@
 # melt
 
+[ ABANDONDED: proof of concept]
+
+That's an old project of mine, here is the original doc.
+
 melt compiles to Go.
 
-I like the concurrency and ecosystem of Go and I like to use it for 
-writing tools and web services.
+I like the concurrency and ecosystem of Go and I like to use it for  writing tools and web services.
 However I don't like a lot of the language design choices.
 melt fixes:
 
 * Type system: Adds generics and sum types to the type system while remaining compatible to the Go ecosystem
 * Error handling: Keeps Go error model but improves a lot the syntax for it
 * Expresiveness: Easier with the error syntax
-
-People usually defend Go choices like "it's simpler, everybody can grasp it in 2 hours". I love simplicity, but I think in that case it's on the expense of the power of the language. Also I find it hard to believe that many of the same people that are ready to invest huge amounts of their time to learn Git/Frameworks/Vim, can't take a little more time to learn the nuances of a more powerful language
 
 # Records
 
@@ -99,8 +100,3 @@ You can have your logic neatly expressed on several lines and *then* deal with
 a possible error.
 
 Of course, you can still do it after it like in normal Go.
-
-# Generics
-
-It's pretty simple, you can define generic functions, interfaces and structs
-using <T>
